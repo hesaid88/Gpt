@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>9급 기출 게임 학습</title>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="9급 기출 게임">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<style>
+  :root{
+    --bg:#0f1220; --panel:#161a2e; --muted:#8d93b0; --text:#eef1ff; --chip:#232846; --chip2:#1b203c; --shadow:0 12px 30px rgba(0,0,0,.35);
+    --safeTop: env(safe-area-inset-top); --safeBottom: env(safe-area-inset-bottom);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;padding-top:var(--safeTop);padding-bottom:var(--safeBottom);
+       background:radial-gradient(1200px 600px at 100% -10%,#1b1f3a 0%,#0f1220 60%),var(--bg);
+       color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,sans-serif}
+  header{position:sticky;top:0;z-index:9;background:linear-gradient(180deg,rgba(15,18,32,.95),rgba(15,18,32,.75));backdrop-filter:blur(10px);border-bottom:1px solid #23284a}
+  .wrap{max-width:1100px;margin:0 auto;padding:18px}
+  h1{margin:0;font-size:22px;display:flex;align-items:center;gap:12px}
+  h1 span.tag{font-size:12px;padding:4px 8px;background:var(--chip);border:1px solid #2b315a;border-radius:999px;color:#c6cbec}
+  .grid{display:grid;grid-template-columns:320px 1fr;gap:18px;margin-top:18px}
+  @media (max-width:980px){.grid{grid-template-columns:1fr}}
+  .panel{background:linear-gradient(180deg,#161a2e,#12162a);border:1px solid #23284a;border-radius:14px;box-shadow:var(--shadow)}
+  .panel .hd{padding:14px 16px;border-bottom:1px solid #242b52;font-weight:600;color:#cfd6ff;display:flex;align-items:center;justify-content:space-between}
+  .panel .bd{padding:16px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  select,button,input[type="number"],input[type="text"]{background:var(--chip2);color:var(--text);border:1px solid #2b315a;border-radius:10px;padding:10px 12px;font-size:14px}
+  button{cursor:pointer}
+  button.primary{background:linear-gradient(180deg,#2a60ff,#2248cc);border:0}
+  button.ghost{background:transparent;border:1px dashed #2e3564}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{padding:6px 10px;background:var(--chip);border:1px solid #2b315a;border-radius:999px;font-size:12px;color:#c6cbec}
+  .qbox{min-height:140px;font-size:20px;line-height:1.5}
+  .opts{display:grid;gap:10px;margin-top:10px}
+  .opt{padding:12px 14px;border:1px solid #2b315a;background:#171c36;border-radius:10px;cursor:pointer}
+  .opt.correct{border-color:#2b6b48;background:#14251e}
+  .opt.wrong{border-color:#6b2a3a;background:#2a1620}
+  .bar{height:10px;background:#1a2144;border:1px solid #2b315a;border-radius:999px;overflow:hidden}
+  .fill{height:100%;background:linear-gradient(90deg,#6ea8fe,#9a8cff)}
+  .muted{color:var(--muted)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stat{padding:10px;background:#121735;border:1px solid #2b315a;border-radius:10px}
+  .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;padding:2px 6px;background:#10142a;border:1px solid #2b315a;border-radius:6px}
+  details summary{cursor:pointer;color:#cfd6ff}
+  .toast{position:fixed;right:16px;bottom:calc(16px + var(--safeBottom));background:#111634;border:1px solid #28305d;color:#dfe4ff;padding:10px 12px;border-radius:10px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:.3s}
+  .toast.show{opacity:1;transform:translateY(0)}
+  .badge{padding:2px 8px;border-radius:999px;background:#1b254e;border:1px solid #2f3a71;color:#d2d7ff;font-size:12px}
+  .hint{padding:10px;border:1px dashed #3a4275;border-radius:10px;background:#12173a}
+  .timer{font-variant-numeric:tabular-nums}
+  .small{font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>9급 기출 게임 학습 <span class="tag">행정법·행정학·한국사·국어·영어 (2020~2025)</span></h1>
+  </div>
+</header>
+
+<div class="wrap grid">
+  <section class="panel">
+    <div class="hd">학습 설정</div>
+    <div class="bd">
+      <div class="row">
+        <label>모드
+          <select id="mode">
+            <option value="mcq">객관식(4지)</option>
+            <option value="ox">OX</option>
+            <option value="flash">플래시카드</option>
+            <option value="speed">스피드런(타이머)</option>
+          </select>
+        </label>
+        <label>제한시간(초) <input id="limit" type="number" min="5" max="300" value="45"></label>
+        <label>연도 ≥ <input id="yearFrom" type="number" min="2010" max="2025" value="2020"></label>
+        <label>과목
+          <select id="subject">
+            <option value="all">전체</option>
+            <option>행정법</option><option>행정학</option><option>한국사</option><option>국어</option><option>영어</option>
+          </select>
+        </label>
+      </div>
+      <div class="row">
+        <button class="primary" id="startBtn">시작</button>
+        <button id="hintBtn">힌트</button>
+        <button id="fiftyBtn">50:50</button>
+        <button id="skipBtn">건너뛰기</button>
+      </div>
+      <div class="row small muted">
+        단축키: <span class="kbd">1~4</span> 선택, <span class="kbd">O</span>/<span class="kbd">X</span>, <span class="kbd">H</span> 힌트, <span class="kbd">F</span> 50:50, <span class="kbd">S</span> 시작/다음
+      </div>
+      <hr style="border-color:#242b52">
+      <div class="two">
+        <div class="stat">
+          <div class="row" style="justify-content:space-between"><div>진행</div><div><span id="progressLbl">0/0</span></div></div>
+          <div class="bar"><div class="fill" id="progressBar" style="width:0%"></div></div>
+          <div class="row" style="margin-top:6px;justify-content:space-between">
+            <div>정답률 <b id="accRate">0%</b></div><div>연속정답 <b id="streak">0</b> 🔥</div>
+          </div>
+        </div>
+        <div class="stat">
+          <div class="row" style="justify-content:space-between">
+            <div>XP <b id="xp">0</b> <span class="badge" id="level">Lv.1</span></div>
+            <div class="timer">⏱ <b id="timer">00:00</b></div>
+          </div>
+          <div class="chips" id="badges"></div>
+        </div>
+      </div>
+      <details style="margin-top:10px">
+        <summary>설정 · 데이터</summary>
+        <div class="row" style="margin-top:10px">
+          <button class="ghost" id="importBtn">데이터 불러오기(JSON)</button>
+          <button class="ghost" id="exportBtn">내보내기(JSON)</button>
+          <button class="ghost" id="resetBtn">진도 초기화</button>
+          <button class="ghost" id="installBtn">홈 화면에 설치</button>
+          <button class="ghost" id="reloadBtn">문제은행 새로고침</button>
+        </div>
+        <p class="small muted">형식: [{"id":1,"type":"mcq"|"ox","year":2024,"subject":"행정법|행정학|한국사|국어|영어","q":"문제","choices":["1","2","3","4"],"answer":0,"explain":"해설","hint":"키워드"}...]</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="panel" id="game">
+    <div class="hd"><div>문제</div><div class="small muted">약점우선 출제 · 적응형</div></div>
+    <div class="bd">
+      <div class="chips" id="meta"></div>
+      <div id="q" class="qbox">시작을 눌러 학습을 시작하세요. (사파리 공유 → ‘홈 화면에 추가’)</div>
+      <div id="hint" class="hint" style="display:none"></div>
+      <div id="options" class="opts"></div>
+      <div class="row" style="margin-top:10px;justify-content:space-between">
+        <div class="muted small">다음: <span class="kbd">S</span> · 정답 확인 후 자동 진행</div>
+        <div class="row"><button id="showExpBtn">해설</button><button id="nextBtn">다음</button></div>
+      </div>
+      <div id="exp" class="hint" style="display:none;margin-top:10px"></div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+<input id="fileInput" type="file" accept="application/json" hidden>
+
+<script>
+const LS_KEY="g9_game_state_v3"; const LS_BANK="g9_bank_v3";
+let bank=[], state=loadState();
+
+function $(s){return document.querySelector(s)}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1400)}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function pickWeighted(items,w){const sum=items.reduce((s,x)=>s+w(x),0);let r=Math.random()*sum;for(const it of items){r-=w(it);if(r<=0)return it}return items[0]}
+function loadState(){const d={xp:0,streak:0,correct:0,total:0,level:1,weak:{}};try{return Object.assign(d,JSON.parse(localStorage.getItem(LS_KEY)||"{}"))}catch(e){return d}}
+function saveState(){localStorage.setItem(LS_KEY,JSON.stringify(state))}
+
+async function loadBankRemote(){
+  try{
+    const res = await fetch('g9-bank.json',{cache:'no-store'});
+    if(res.ok){
+      const arr = await res.json();
+      if(Array.isArray(arr)){ bank = arr; localStorage.setItem(LS_BANK,JSON.stringify(bank)); toast("문제은행 로드 완료"); updateStatsUI(); return; }
+    }
+    throw 0;
+  }catch{
+    // fallback to localStorage or minimal sample
+    try{ bank = JSON.parse(localStorage.getItem(LS_BANK)||"[]") }catch{ bank = [] }
+    if(bank.length===0){
+      bank = [{
+        id:1,type:"ox",year:2024,subject:"행정법",
+        q:"부당결부금지의 원칙은 행정작용에 내재하는 일반원칙이다.",answer:"O",
+        hint:"실질적 관련성 없는 결부 금지", explain:"행정목적과 실질적 관련 없는 조건·대가 강요 금지."
+      }];
+    }
+    toast("로컬 문제은행 사용");
+  }
+}
+loadBankRemote();
+
+function fmt(sec){sec=Math.max(0,sec|0);const m=String(Math.floor(sec/60)).padStart(2,"0");const s=String(sec%60).padStart(2,"0");return `${m}:${s}`}
+function filterBank(){const yf=+$("#yearFrom").value||2020; const subj=$("#subject").value; return bank.filter(q=>q.year>=yf && (subj==="all"||q.subject===subj));}
+function weightFor(q){const w=state.weak[q.id]||{wrong:0,seen:0,ts:0}; const seen=w.seen||0, wrong=w.wrong||0; const base=1+wrong*2+Math.max(0,Date.now()/1e6-(w.ts||0)); const acc=seen?(1-(seen-wrong)/seen):1; return base*(0.5+acc)}
+
+let current=null, timerId=null, remain=0, fiftyUsed=false;
+function start(){const pool=filterBank(); if(pool.length===0){toast("조건에 맞는 문제가 없어요.");return} current=pickWeighted(pool,weightFor); renderQuestion(); setupTimer();}
+function setupTimer(){const mode=$("#mode").value; const limit=(mode==="speed"||mode==="mcq"||mode==="ox")?(+$("#limit").value||45):0; remain=limit; updateTimer(); clearInterval(timerId); if(remain>0){timerId=setInterval(()=>{remain--;updateTimer();if(remain<=0){clearInterval(timerId);reveal(null)}},1000)}}
+function updateTimer(){ $("#timer").textContent = remain? fmt(remain) : "∞" }
+function renderQuestion(){
+  $("#meta").innerHTML = `<span class="chip">연도 ${current.year}</span><span class="chip">${current.subject}</span><span class="chip">${(current.type||'mcq').toUpperCase()}</span>`;
+  $("#q").textContent=current.q; $("#hint").style.display="none"; $("#exp").style.display="none"; const opts=$("#options"); opts.innerHTML=""; fiftyUsed=false;
+  const mode=$("#mode").value;
+  if(current.type==="mcq"||mode==="mcq"||mode==="speed"){
+    const idxs=[0,1,2,3]; shuffle(idxs);
+    idxs.forEach(i=>{const d=document.createElement("div"); d.className="opt"; d.dataset.idx=i; d.textContent=(i+1)+". "+current.choices[i]; d.onclick=()=>reveal(i); opts.appendChild(d);});
+  }else if(current.type==="ox"||mode==="ox"){
+    ["O","X"].forEach(s=>{const d=document.createElement("div"); d.className="opt"; d.dataset.symbol=s; d.textContent=s; d.onclick=()=>reveal(s); opts.appendChild(d);});
+  }else{ const d=document.createElement("div"); d.className="opt"; d.innerHTML="<b>정답 보기</b>"; d.onclick=()=>{ d.remove(); showExplain(); markSeen(false) }; opts.appendChild(d); }
+  updateStatsUI();
+}
+function reveal(choice){
+  let correct=false; const opts=[...$("#options").children]; const mode=$("#mode").value;
+  if(current.type==="mcq"||mode==="mcq"||mode==="speed"){
+    const ans=current.answer; opts.forEach(n=>{const i=+n.dataset.idx; if(i===ans) n.classList.add("correct"); if(choice!==null && i===choice && choice!==ans) n.classList.add("wrong"); n.onclick=null;});
+    correct=(choice===ans);
+  }else if(current.type==="ox"||mode==="ox"){
+    const ans=current.answer; opts.forEach(n=>{const s=n.dataset.symbol; if(s===ans) n.classList.add("correct"); if(choice!==null && s===choice && choice!==ans) n.classList.add("wrong"); n.onclick=null;});
+    correct=(choice===ans);
+  }else{ showExplain(); return; }
+  markSeen(!correct);
+  if(correct){ gainXP(10 + state.streak*2); state.streak++; toast("정답! +XP"); } else { state.streak=0; toast("아쉬워요…"); }
+  state.total++; if(correct) state.correct++; saveState(); updateStatsUI(); showExplain();
+}
+function showExplain(){ $("#exp").style.display="block"; $("#exp").innerHTML=`<b>해설</b><br>${current.explain||"해설 준비중"}` }
+function markSeen(wrong){ const w=state.weak[current.id]||{wrong:0,seen:0,ts:0}; w.seen++; if(wrong) w.wrong++; w.ts=Date.now()/1e6; state.weak[current.id]=w; saveState() }
+function nextQ(){ start() }
+function gainXP(n){ state.xp+=n; const lv=1+Math.floor(state.xp/150); if(lv>state.level){ state.level=lv; $("#badges").insertAdjacentHTML("beforeend",`<span class="badge">Lv.${lv} 업!</span>`)} saveState() }
+function updateStatsUI(){
+  $("#xp").textContent=state.xp; $("#level").textContent=`Lv.${state.level}`;
+  const acc=state.total? Math.round(100*state.correct/state.total):0; $("#accRate").textContent=acc+"%"; $("#streak").textContent=state.streak;
+  const pool=filterBank(); const done=Object.values(state.weak).reduce((s,w)=>s+(w.seen?1:0),0); $("#progressLbl").textContent=`${Math.min(done,pool.length)}/${pool.length}`;
+  $("#progressBar").style.width=(pool.length? Math.min(100,Math.round(100*done/pool.length)):0)+"%";
+}
+$("#startBtn").onclick=nextQ; $("#nextBtn").onclick=nextQ;
+$("#hintBtn").onclick=()=>{ if(!current?.hint) return toast("힌트 없음"); $("#hint").style.display="block"; $("#hint").textContent=current.hint }
+$("#showExpBtn").onclick=()=>$("#exp").style.display="block";
+$("#skipBtn").onclick=()=>{ markSeen(true); state.streak=0; saveState(); nextQ() }
+$("#fiftyBtn").onclick=()=>{ if(fiftyUsed || !(current.type==="mcq"||$("#mode").value==="mcq"||$("#mode").value==="speed")) return; fiftyUsed=true; const ans=current.answer; let removed=0;
+  [...$("#options").children].forEach(n=>{const i=+n.dataset.idx; if(i!==ans && removed<2){ n.style.opacity=.35; n.style.pointerEvents="none"; removed++ }});
+};
+document.addEventListener("keydown",(e)=>{ const k=e.key.toLowerCase(); if(k==="s") nextQ(); if(k==="h") $("#hintBtn").click(); if(k==="f") $("#fiftyBtn").click();
+  if(["1","2","3","4"].includes(k)){ const i=+k-1; const node=[...$("#options").children].find(n=>+n.dataset.idx===i); node?.click(); }
+  if(k==="o"||k==="x"){ const node=[...$("#options").children].find(n=>n.dataset.symbol===k.toUpperCase()); node?.click(); }
+});
+const fileInput=$("#fileInput");
+$("#exportBtn").onclick=()=>{ const blob=new Blob([JSON.stringify(bank,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="g9-bank.json"; a.click(); }
+$("#importBtn").onclick=()=>fileInput.click();
+fileInput.onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ const arr=JSON.parse(r.result); if(!Array.isArray(arr)) throw 0; bank=arr; localStorage.setItem(LS_BANK,JSON.stringify(bank)); toast("불러오기 완료!"); updateStatsUI(); }catch{ toast("JSON 형식 오류"); } }; r.readAsText(f); };
+$("#resetBtn").onclick=()=>{ if(confirm("진도/약점/XPs 초기화(문제은행 유지)?")){ state={xp:0,streak:0,correct:0,total:0,level:1,weak:{}}; saveState(); updateStatsUI(); toast("초기화 완료"); } };
+$("#reloadBtn").onclick=()=>loadBankRemote();
+// PWA install
+let deferredPrompt=null; window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e; $("#installBtn").style.display="inline-block"; });
+$("#installBtn").onclick=async()=>{ if(!deferredPrompt){ toast("사파리: 공유 버튼 → ‘홈 화면에 추가’"); return; } deferredPrompt.prompt(); deferredPrompt=null; };
+if('serviceWorker' in navigator){ window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js'); }); }
+</script>
+</body>
+</html>
